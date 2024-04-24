@@ -6,4 +6,8 @@ public class Turbine {
     private final long[] CriticalSteamFlux = new long[] {};
     private final long[] steamFlux = new long[] {};
     private int tier;
+
+    public boolean process(int period) {
+        return false;
+    }
 }

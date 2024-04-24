@@ -13,13 +13,15 @@ public class Reactor {
     private int EscapedRadiation;
     private CoolantPackage coolant;
     private CoolantPackage output;
-    private ArrayList<Integer> InsertionStatus = new ArrayList<>();
-    private ArrayList<Integer> IsolationStatus = new ArrayList<>();
+    private final ArrayList<Integer> InsertionStatus = new ArrayList<>();
+    private final ArrayList<Integer> IsolationStatus = new ArrayList<>();
     private long EUGenerated;
-    private int[] maxSize = new int[] { 0, 4, 6, 8 };
+
+    private boolean fluidMode = false;
+    private static final int[] maxSize = new int[]{0, 4, 6, 8};
     public int tier = 0;
 
-    private ArrayList<Component> components = new ArrayList<>();
+    private final ArrayList<Component> components = new ArrayList<>();
 
     public Component getComponent(int i, int j, int k) {
         int x = maxSize[tier];
