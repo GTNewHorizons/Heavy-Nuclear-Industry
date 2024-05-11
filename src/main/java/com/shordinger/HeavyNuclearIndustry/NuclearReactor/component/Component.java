@@ -1,12 +1,15 @@
 package com.shordinger.HeavyNuclearIndustry.NuclearReactor.component;
 
+import com.shordinger.HeavyNuclearIndustry.NuclearReactor.IProcessable;
+import com.shordinger.HeavyNuclearIndustry.warpper.InstanceDecoder;
 import net.minecraft.nbt.NBTTagCompound;
 
 import com.shordinger.HeavyNuclearIndustry.NuclearReactor.fuel.FuelPackage;
 import com.shordinger.HeavyNuclearIndustry.NuclearReactor.reactor.Reactor;
 
-public class Component {
+public class Component implements IProcessable {
 
+    private static InstanceDecoder<Component> decoder;
     private Component preview;
     private int neutronsReceived;
     private int neutronsEnergyReceived;
@@ -59,19 +62,7 @@ public class Component {
     }
 
     public boolean process(Reactor reactor, int x, int y, int z) {
-        for (int i = -1; i <= 1; i++) {
-            for (int j = -1; j <= 1; j++) {
-                for (int k = -1; k <= 1; k++) {
-                    if (reactor.getComponent(x + i, y + j, z + k)
-                        .consume(this)) {
-
-                    } else {
-
-                    }
-                }
-            }
-        }
-        return true;
+        return false;
     }
 
     public boolean consume(Component component) {
@@ -84,5 +75,45 @@ public class Component {
 
     public NBTTagCompound saveToNBT(NBTTagCompound tag) {
         return tag;
+    }
+
+    @Override
+    public boolean run() {
+        return false;
+    }
+
+    @Override
+    public boolean preProcess() {
+        return false;
+    }
+
+    @Override
+    public boolean process() {
+        return false;
+    }
+
+    @Override
+    public boolean postProcess() {
+        return false;
+    }
+
+    @Override
+    public boolean status() {
+        return false;
+    }
+
+    @Override
+    public void encoder(byte[] buffer) {
+
+    }
+
+    @Override
+    public void decoder(byte[] buffer) {
+
+    }
+
+    @Override
+    public int getMemoryByte() {
+        return 0;
     }
 }

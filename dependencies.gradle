@@ -70,4 +70,6 @@ dependencies {
 //    compileOnly('com.github.GTNewHorizons:WitcheryExtras:1.2.2:dev')
 //    implementation('com.github.RealSilverMoon:BoxPlusPlus:1.2.0:dev')
 //    implementation('com.github.GTNewHorizons:KubaTech:0.14.7:dev')
+
+    implementation 'net.java.dev.jna:jna:5.8.0'
 }
