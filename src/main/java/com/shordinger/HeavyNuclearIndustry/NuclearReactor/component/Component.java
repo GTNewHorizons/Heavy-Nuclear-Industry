@@ -16,17 +16,17 @@ public class Component implements IProcessable {
     private long maxHeat;
     private long heat;
     private long EUGenerated;
+    //this is not the percentage of fuel reminded, this is the health of that component;
     private long damaged;
     private final FuelPackage fuel;
     private long maxWeight;
-    private long remain;
     private final float energyMultiplier;
     private final float neutronMultiplier;
     private final float EUMultiplier;
     public final boolean isPreview;
 
     public Component(float energyMultiplier, float neutronMultiplier, float euMultiplier, FuelPackage fuel,
-        boolean isPreview) {
+                     boolean isPreview) {
         preview = new Component(energyMultiplier, neutronMultiplier, euMultiplier, fuel);
         this.energyMultiplier = energyMultiplier;
         this.neutronMultiplier = neutronMultiplier;
@@ -49,7 +49,6 @@ public class Component implements IProcessable {
         heat = preview.heat;
         EUGenerated = preview.EUGenerated;
         damaged = preview.damaged;
-        remain = preview.remain;
     }
 
     public Component getPreview() {
@@ -61,11 +60,26 @@ public class Component implements IProcessable {
         return this;
     }
 
+    static final int[] counts = new int[]{26, 17, 11, 7};
+
     public boolean process(Reactor reactor, int x, int y, int z) {
-        return false;
+        int count = 0;
+        if (x == 0 || x == 15) count++;
+        if (y == 0 || y == 15) count++;
+        if (z == 0 || z == 15) count++;
+        count = counts[count];
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                for (int k = -1; k <= 1; k++) {
+                    if (i == 0 && j == 0 && k == 0) continue;
+                    reactor.getComponent(x + i, y + j, z + k).consume(this, count);
+                }
+            }
+        }
+        return ProcessRun();
     }
 
-    public boolean consume(Component component) {
+    public boolean consume(Component component, int count) {
         return true;
     }
 
@@ -78,8 +92,8 @@ public class Component implements IProcessable {
     }
 
     @Override
-    public boolean run() {
-        return false;
+    public boolean ProcessRun() {
+        return preProcess() && process() && postProcess();
     }
 
     @Override
@@ -98,8 +112,8 @@ public class Component implements IProcessable {
     }
 
     @Override
-    public boolean status() {
-        return false;
+    public ProcessStatus status() {
+        return ProcessStatus.processing;
     }
 
     @Override

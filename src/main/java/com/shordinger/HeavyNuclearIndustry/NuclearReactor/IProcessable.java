@@ -4,7 +4,7 @@ public interface IProcessable {
 
 
 
-    public boolean run();
+    public boolean ProcessRun();
 
     public boolean preProcess();
 
@@ -12,10 +12,21 @@ public interface IProcessable {
 
     public boolean postProcess();
 
-    public boolean status();
+    public ProcessStatus status();
 
     public void encoder(byte[] buffer);
     public void decoder(byte[] buffer);
     public int getMemoryByte();
+
+    public enum ProcessStatus{
+        //Process jobs have submitted, waiting for process;
+        waiting,
+        //Processing is running
+        processing,
+        //Process finished
+        finish,
+        //Error issued by processing, waiting for reset;
+        error
+    }
 
 }

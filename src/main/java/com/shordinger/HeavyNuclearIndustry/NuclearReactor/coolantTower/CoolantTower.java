@@ -13,7 +13,7 @@ public class CoolantTower implements IProcessable {
     }
 
     @Override
-    public boolean run() {
+    public boolean ProcessRun() {
         return false;
     }
 
@@ -33,8 +33,8 @@ public class CoolantTower implements IProcessable {
     }
 
     @Override
-    public boolean status() {
-        return false;
+    public ProcessStatus status() {
+        return ProcessStatus.processing;
     }
 
     @Override

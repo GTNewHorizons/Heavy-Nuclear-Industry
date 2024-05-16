@@ -1,5 +1,10 @@
 package com.shordinger.HeavyNuclearIndustry.NuclearReactor.fuel;
 
-public class Fuel {
+import net.minecraft.block.material.Material;
 
+public class Fuel {
+    Material material;
+    Material resultMaterial;
+    int neutronsEnergy;
+    int heatProcess;
 }

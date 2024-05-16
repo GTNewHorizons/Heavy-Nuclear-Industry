@@ -1,6 +1,7 @@
 package com.shordinger.HeavyNuclearIndustry.NuclearReactor.reactor;
 
 import java.util.ArrayList;
+import java.util.concurrent.locks.LockSupport;
 
 import com.shordinger.HeavyNuclearIndustry.NuclearReactor.IProcessable;
 import com.shordinger.HeavyNuclearIndustry.warpper.InstanceDecoder;
@@ -9,7 +10,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import com.shordinger.HeavyNuclearIndustry.NuclearReactor.component.Component;
 import com.shordinger.HeavyNuclearIndustry.NuclearReactor.coolant.CoolantPackage;
 
-public class Reactor implements IProcessable {
+public class Reactor implements IProcessable, Runnable {
 
     private static InstanceDecoder<Reactor> decoder;
     private int maxCoreHeat;
@@ -20,11 +21,19 @@ public class Reactor implements IProcessable {
     private final ArrayList<Integer> IsolationStatus = new ArrayList<>();
     private long EUGenerated;
 
+    private ProcessStatus status = ProcessStatus.finish;
+
     private boolean fluidMode = false;
-    private static final int[] maxSize = new int[]{0, 4, 6, 8};
+    private static final int[] maxSize = new int[]{0, 4, 8, 12};
     public int tier = 0;
 
-    private final ArrayList<Component> components = new ArrayList<>();
+
+    private final ArrayList<Component> components = new ArrayList<>(16 * 16 * 16);
+
+    private Thread thread;
+    public Reactor(){
+
+    }
 
     public Component getComponent(int i, int j, int k) {
         int x = maxSize[tier];
@@ -52,38 +61,55 @@ public class Reactor implements IProcessable {
         return tag;
     }
 
-    public boolean fluidProcessing() {
+    private boolean fluidProcessing() {
         return false;
     }
 
     public boolean process(int period) {
+        if(thread==null){
+            thread=new Thread(this);
+        }
+        if (status != ProcessStatus.finish) {
+            return false;
+        }
+        else{
+            status = ProcessStatus.waiting;
+            LockSupport.unpark(thread);
+        }
 
-        return false;
+        return true;
     }
 
     @Override
-    public boolean run() {
-        return false;
+    public boolean ProcessRun() {
+        return preProcess() && process() && postProcess();
     }
 
+
+    //run value initialization and other pre-processing jobs
     @Override
     public boolean preProcess() {
         return false;
     }
 
+    //run calculations(after finish implement this, we should move them to DLL instead of running in FXXKing Java)
     @Override
     public boolean process() {
+        for(IProcessable component:components){
+            component.ProcessRun();
+        }
         return false;
     }
 
+    //garbage collection and other jobs
     @Override
     public boolean postProcess() {
         return false;
     }
 
     @Override
-    public boolean status() {
-        return false;
+    public ProcessStatus status() {
+        return status;
     }
 
     @Override
@@ -99,5 +125,18 @@ public class Reactor implements IProcessable {
     @Override
     public int getMemoryByte() {
         return 0;
+    }
+
+    @Override
+    public void run() {
+        if (status == ProcessStatus.waiting) {
+            status = ProcessStatus.processing;
+            if (ProcessRun()) {
+                status = ProcessStatus.finish;
+            } else {
+                status = ProcessStatus.error;
+            }
+        }
+        LockSupport.park();
     }
 }
