@@ -7,48 +7,61 @@ import net.minecraft.nbt.NBTTagCompound;
 import com.shordinger.HeavyNuclearIndustry.NuclearReactor.fuel.FuelPackage;
 import com.shordinger.HeavyNuclearIndustry.NuclearReactor.reactor.Reactor;
 
+import static com.shordinger.HeavyNuclearIndustry.NuclearReactor.component.EmptyComponent.EMPTY;
+
 public class Component implements IProcessable {
 
     private static InstanceDecoder<Component> decoder;
-    private Component preview;
-    private int neutronsReceived;
-    private int neutronsEnergyReceived;
-    private long maxHeat;
-    private long heat;
-    private long EUGenerated;
+    protected Component preview;
+    protected int neutronsReceived;
+    protected int neutronsEnergyReceived;
+    protected final long maxHeat;
+    protected long heat;
+    protected long EUGenerated;
     //this is not the percentage of fuel reminded, this is the health of that component;
-    private long damaged;
-    private final FuelPackage fuel;
-    private long maxWeight;
-    private final float energyMultiplier;
-    private final float neutronMultiplier;
-    private final float EUMultiplier;
+    protected long damaged;
+    protected final FuelPackage fuel;
+    protected long maxWeight;
+    protected final float heatMultiplier;
+    protected final float neutronMultiplier;
+    protected final float EUMultiplier;
     public final boolean isPreview;
 
-    public Component(float energyMultiplier, float neutronMultiplier, float euMultiplier, FuelPackage fuel,
-                     boolean isPreview) {
-        preview = new Component(energyMultiplier, neutronMultiplier, euMultiplier, fuel);
-        this.energyMultiplier = energyMultiplier;
+    public Component(float heatMultiplier, float neutronMultiplier, float euMultiplier, FuelPackage fuel,
+                     long maxHeat, boolean isPreview) {
+        this.maxHeat = maxHeat;
+        preview = new Component(maxHeat, heatMultiplier, neutronMultiplier, euMultiplier, fuel);
+        this.heatMultiplier = heatMultiplier;
         this.neutronMultiplier = neutronMultiplier;
         EUMultiplier = euMultiplier;
         this.fuel = fuel;
-        this.isPreview = false;
+        this.isPreview = isPreview;
     }
 
-    protected Component(float energyMultiplier, float neutronMultiplier, float euMultiplier, FuelPackage fuel) {
+    protected Component(long maxHeat, float heatMultiplier, float neutronMultiplier, float euMultiplier, FuelPackage fuel) {
+        this.maxHeat = maxHeat;
         isPreview = true;
         this.fuel = fuel;
-        this.energyMultiplier = energyMultiplier;
+        this.heatMultiplier = heatMultiplier;
         this.neutronMultiplier = neutronMultiplier;
         EUMultiplier = euMultiplier;
     }
 
     private void move() {
-        neutronsReceived = preview.neutronsEnergyReceived;
+        neutronsReceived = preview.neutronsReceived;
         neutronsEnergyReceived = preview.neutronsEnergyReceived;
         heat = preview.heat;
         EUGenerated = preview.EUGenerated;
         damaged = preview.damaged;
+        preview.clear();
+
+    }
+
+    public void clear() {
+        neutronsEnergyReceived = 0;
+        neutronsReceived = 0;
+        heat = 0;
+        EUGenerated = 0;
     }
 
     public Component getPreview() {
@@ -72,14 +85,18 @@ public class Component implements IProcessable {
             for (int j = -1; j <= 1; j++) {
                 for (int k = -1; k <= 1; k++) {
                     if (i == 0 && j == 0 && k == 0) continue;
-                    reactor.getComponent(x + i, y + j, z + k).consume(this, count);
+                    if (x + i < 0 || x + i > 15 || y + j < 0 || y + j > 15 || z + k < 0 || z + k > 15) continue;
+                    if (consume(reactor.getComponent(x + i, y + j, z + k), count)) {
+                        reactor.setComponents(x + i, y + j, z + k, EMPTY);
+                    }
                 }
             }
         }
+        fuel.use();
         return ProcessRun();
     }
 
-    public boolean consume(Component component, int count) {
+    public boolean consume(Component receive, int count) {
         return true;
     }
 
@@ -98,17 +115,17 @@ public class Component implements IProcessable {
 
     @Override
     public boolean preProcess() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean process() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean postProcess() {
-        return false;
+        return true;
     }
 
     @Override

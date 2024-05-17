@@ -8,8 +8,8 @@ public class CoolingIOComponent extends Component {
     CoolantPackage coolantPackage;
     CoolantPackage output;
 
-    public CoolingIOComponent(float energyMultiplier, float neutronMultiplier, float euMultiplier, FuelPackage fuel,
+    public CoolingIOComponent(float energyMultiplier, float neutronMultiplier, float euMultiplier, FuelPackage fuel,long maxHeat,
                               boolean isPreview) {
-        super(energyMultiplier, neutronMultiplier, euMultiplier, fuel, isPreview);
+        super(energyMultiplier, neutronMultiplier, euMultiplier, fuel, maxHeat, isPreview);
     }
 }

@@ -4,8 +4,8 @@ import com.shordinger.HeavyNuclearIndustry.NuclearReactor.fuel.FuelPackage;
 
 public class ReductionSet extends Component {
 
-    public ReductionSet(float energyMultiplier, float neutronMultiplier, float euMultiplier, FuelPackage fuel,
+    public ReductionSet(float energyMultiplier, float neutronMultiplier, float euMultiplier, FuelPackage fuel,long maxHeat,
         boolean isPreview) {
-        super(energyMultiplier, neutronMultiplier, euMultiplier, fuel, isPreview);
+        super(energyMultiplier, neutronMultiplier, euMultiplier, fuel, maxHeat, isPreview);
     }
 }

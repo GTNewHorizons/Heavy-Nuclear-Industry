@@ -12,6 +12,7 @@ import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,14 +24,14 @@ public class GT_TileEntity_NuclearReactor extends GT_MetaTileEntity_MultiblockBa
     private final HashMap<Offset, MultiPiecesStructure> turbineTier = new HashMap<>();
     private final ArrayList<CoolantTower> coolantTowers = new ArrayList<>();
     private final ArrayList<Turbine> turbines = new ArrayList<>();
-    private Reactor reactor = null;
+    private final Reactor reactor = new Reactor();
     private final ArrayList<Offset> structures = new ArrayList<>();
     private MultiPiecesStructure core;
     private final int tier = 0;
-    private static final GT_TileEntity_NuclearReactor.MultiPiecesStructure tier1 = new MultiPiecesStructure(1, new String[][]{}, "NuclearReactorCore-1");
-    private static final GT_TileEntity_NuclearReactor.MultiPiecesStructure tier2 = new MultiPiecesStructure(2, new String[][]{}, "NuclearReactorCore-2");
-    private static final GT_TileEntity_NuclearReactor.MultiPiecesStructure tier3 = new MultiPiecesStructure(3, new String[][]{}, "NuclearReactorCore-3");
-    private static final GT_TileEntity_NuclearReactor.MultiPiecesStructure tier4 = new MultiPiecesStructure(4, new String[][]{}, "NuclearReactorCore-4");
+    private static final MultiPiecesStructure tier1 = new MultiPiecesStructure(1, new String[][]{}, "NuclearReactorCore-1");
+    private static final MultiPiecesStructure tier2 = new MultiPiecesStructure(2, new String[][]{}, "NuclearReactorCore-2");
+    private static final MultiPiecesStructure tier3 = new MultiPiecesStructure(3, new String[][]{}, "NuclearReactorCore-3");
+    private static final MultiPiecesStructure tier4 = new MultiPiecesStructure(4, new String[][]{}, "NuclearReactorCore-4");
 
     private boolean structureChanged = false;
 
@@ -50,6 +51,30 @@ public class GT_TileEntity_NuclearReactor extends GT_MetaTileEntity_MultiblockBa
             this.offset = offset;
             return this;
         }
+    }
+
+    @Override
+    public void onFirstTick_EM(IGregTechTileEntity aBaseMetaTileEntity) {
+        super.onFirstTick_EM(aBaseMetaTileEntity);
+        reactor.init();
+    }
+
+    @Override
+    public void onPostTick(IGregTechTileEntity aBaseMetaTileEntity, long aTick) {
+        super.onPostTick(aBaseMetaTileEntity, aTick);
+        reactor.process((int) aTick);
+    }
+
+    @Override
+    public void loadNBTData(NBTTagCompound aNBT) {
+        super.loadNBTData(aNBT);
+        reactor.setByNBT(aNBT);
+    }
+
+    @Override
+    public void saveNBTData(NBTTagCompound aNBT) {
+        super.saveNBTData(aNBT);
+        reactor.saveToNBT(aNBT);
     }
 
     public static class Offset {

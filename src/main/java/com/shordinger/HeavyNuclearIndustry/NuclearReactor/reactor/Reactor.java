@@ -35,6 +35,10 @@ public class Reactor implements IProcessable, Runnable {
 
     }
 
+    public void init(){
+
+    }
+
     public Component getComponent(int i, int j, int k) {
         int x = maxSize[tier];
         return components.get(i * x * x + j * x + k);
